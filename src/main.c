@@ -263,8 +263,8 @@ struct _controller{
     double Lambda_G1[H][H], Lambda_G2[H][H]; // Eq. 3.62 define
     double Lambda_C11[H][H], Lambda_C12[H][H], Lambda_C21[H][H], Lambda_C22[H][H]; // Eq. 3.61 define
     double Lambda[OUT][OUT];      // error's weight factor
-    double qr1;                   // Eq. 3.48 define
-    double qr2;                   // Eq. 3.48 define
+    double r1;                    // Eq. 3.48 define
+    double r2;                    // Eq. 3.48 define
     double dqr1;                  // derivative of qr1
     double dqr2;                  // derivative of qr2
     double ddqr1;                 // second-order derivative of qr1
@@ -352,8 +352,8 @@ void CONTROL_init(){
         }
     }
     
-    controller.qr1 = controller.err1_velocity + controller.Lambda[0][0] * controller.err1; // Eq. 3.48
-    controller.qr2 = controller.err2_velocity + controller.Lambda[1][1] * controller.err2; // Eq. 3.48
+    controller.r1 = controller.err1_velocity + controller.Lambda[0][0] * controller.err1; // Eq. 3.48
+    controller.r2 = controller.err2_velocity + controller.Lambda[1][1] * controller.err2; // Eq. 3.48
     controller.integral1 = 0.0;
     controller.integral2 = 0.0;
     controller.Kr = 0.10;
@@ -499,37 +499,37 @@ double CONTROL_realize(int i){
 
     controller.err1 = qd1.y[i] - system_state.q1;
     controller.err1_velocity = dqd1.y[i] - system_state.dq1;
-    controller.err2 = qd1.y[i] - system_state.q2;
+    controller.err2 = qd2.y[i] - system_state.q2;
     controller.err2_velocity = dqd2.y[i] - system_state.dq2;
     archive.error1_archive[i] = controller.err1;
     archive.error1_velocity_archive[i] = controller.err1_velocity;
     archive.error2_archive[i] = controller.err2;
     archive.error2_velocity_archive[i] = controller.err2_velocity;
     // printf("controller.err1 = %f\n", controller.err1);
-    controller.qr1 = controller.err1_velocity + controller.Lambda[0][0] * controller.err1;
+    controller.r1 = controller.err1_velocity + controller.Lambda[0][0] * controller.err1;
     controller.dqr1 = dqd1.y[i] + controller.Lambda[0][0] * controller.err1;
     controller.ddqr1 = ddqd1.y[i] + controller.Lambda[0][0] * controller.err1_velocity;
-    controller.qr2 = controller.err2_velocity + controller.Lambda[1][1] * controller.err2;
+    controller.r2 = controller.err2_velocity + controller.Lambda[1][1] * controller.err2;
     controller.dqr2 = dqd2.y[i] + controller.Lambda[1][1] * controller.err2;
     controller.ddqr2 = ddqd2.y[i] + controller.Lambda[1][1] * controller.err2_velocity;
     // printf("controller.qr1 = %f\n", controller.qr1);
 
     // adaptive law
     for (int j = 0; j < H; j++){
-        derivative_weight_D11[j] = controller.Lambda_D11[j][j] * phi_D11[j] * controller.ddqr1 * controller.qr1; // Eq. 3.60
-        derivative_weight_D12[j] = controller.Lambda_D12[j][j] * phi_D12[j] * controller.ddqr2 * controller.qr1;
-        derivative_weight_D21[j] = controller.Lambda_D21[j][j] * phi_D21[j] * controller.ddqr1 * controller.qr2;
-        derivative_weight_D22[j] = controller.Lambda_D22[j][j] * phi_D22[j] * controller.ddqr2 * controller.qr2;
+        derivative_weight_D11[j] = controller.Lambda_D11[j][j] * phi_D11[j] * controller.ddqr1 * controller.r1; // Eq. 3.60
+        derivative_weight_D12[j] = controller.Lambda_D12[j][j] * phi_D12[j] * controller.ddqr2 * controller.r1;
+        derivative_weight_D21[j] = controller.Lambda_D21[j][j] * phi_D21[j] * controller.ddqr1 * controller.r2;
+        derivative_weight_D22[j] = controller.Lambda_D22[j][j] * phi_D22[j] * controller.ddqr2 * controller.r2;
     }
     for (int j = 0; j < H; j++){
-        derivative_weight_G1[j] = controller.Lambda_G1[j][j] * phi_G1[j] * controller.qr1; // Eq. 3.62
-        derivative_weight_G2[j] = controller.Lambda_G2[j][j] * phi_G2[j] * controller.qr2;
+        derivative_weight_G1[j] = controller.Lambda_G1[j][j] * phi_G1[j] * controller.r1; // Eq. 3.62
+        derivative_weight_G2[j] = controller.Lambda_G2[j][j] * phi_G2[j] * controller.r2;
     }
     for (int j = 0; j < H; j++){
-        derivative_weight_C11[j] = controller.Lambda_C11[j][j] * phi_C11[j] * controller.dqr1 * controller.qr1; // Eq. 3.61
-        derivative_weight_C12[j] = controller.Lambda_C12[j][j] * phi_C12[j] * controller.dqr2 * controller.qr1;
-        derivative_weight_C21[j] = controller.Lambda_C21[j][j] * phi_C21[j] * controller.dqr1 * controller.qr2;
-        derivative_weight_C22[j] = controller.Lambda_C22[j][j] * phi_C22[j] * controller.dqr2 * controller.qr2;
+        derivative_weight_C11[j] = controller.Lambda_C11[j][j] * phi_C11[j] * controller.dqr1 * controller.r1; // Eq. 3.61
+        derivative_weight_C12[j] = controller.Lambda_C12[j][j] * phi_C12[j] * controller.dqr2 * controller.r1;
+        derivative_weight_C21[j] = controller.Lambda_C21[j][j] * phi_C21[j] * controller.dqr1 * controller.r2;
+        derivative_weight_C22[j] = controller.Lambda_C22[j][j] * phi_C22[j] * controller.dqr2 * controller.r2;
         // printf("derivative_weight_C11[%d] = %f\n", j, derivative_weight_C11[j]);
     }
 
@@ -550,8 +550,8 @@ double CONTROL_realize(int i){
         weight_C22[j] = weight_C22[j] + derivative_weight_C22[j] * Ts;
     }
 
-    controller.integral1 += controller.qr1;
-    controller.integral2 += controller.qr2;
+    controller.integral1 += controller.r1;
+    controller.integral2 += controller.r2;
 
     for (int j = 0; j < H; j++){
         dynamics.DSNN_estimate[0][0] = weight_D11[j] * phi_D11[j];  // Eq. 3.51
@@ -584,17 +584,17 @@ double CONTROL_realize(int i){
      + dynamics.CDNN_estimate[1][0] * controller.dqr1 + dynamics.CDNN_estimate[1][1] * controller.dqr2
      + dynamics.GSNN_estimate[1];
 
-    if (controller.qr1 >= 0)
+    if (controller.r1 >= 0)
         torque.tol1_r = controller.Kr;
     else
         torque.tol1_r = -controller.Kr;
-    if (controller.qr2 >= 0)
+    if (controller.r2 >= 0)
         torque.tol2_r = controller.Kr;
     else
         torque.tol2_r = -controller.Kr;
 
-    torque.tol1 = torque.tol1_m + controller.Kp1 * controller.qr1 + controller.Ki1 * controller.integral1 + torque.tol1_r; // Eq. 3.55, control law
-    torque.tol2 = torque.tol2_m + controller.Kp2 * controller.qr2 + controller.Ki2 * controller.integral2 + torque.tol2_r;
+    torque.tol1 = torque.tol1_m + controller.Kp1 * controller.r1 + controller.Ki1 * controller.integral1 + torque.tol1_r; // Eq. 3.55, control law
+    torque.tol2 = torque.tol2_m + controller.Kp2 * controller.r2 + controller.Ki2 * controller.integral2 + torque.tol2_r;
     archive.tol1_archive[i] = torque.tol1;
     archive.tol2_archive[i] = torque.tol2;
     controller.controller_out1 = torque.tol1;
