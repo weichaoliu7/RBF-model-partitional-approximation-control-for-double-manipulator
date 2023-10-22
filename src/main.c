@@ -14,7 +14,7 @@
 #define H 5              // input layer neurons number
 #define IN 4             // hidden layer neurons number
 #define OUT 2            // output layer neurons number
-#define INPUTMODE 2      // input mode selection, 1 or 2
+#define INPUTMODE 1      // input mode selection, 1 or 2
 #define ARRAY_SIZE 10000 // hidden layer neurons number
 
 static double Ts = 0.001;                                                                                                                        // sampling period
@@ -527,9 +527,9 @@ double CONTROL_realize(int i){
     }
     for (int j = 0; j < H; j++){
         derivative_weight_C11[j] = controller.Lambda_C11[j][j] * phi_C11[j] * controller.dqr1 * controller.r1; // Eq. 3.61
-        derivative_weight_C12[j] = controller.Lambda_C12[j][j] * phi_C12[j] * controller.dqr2 * controller.r1;
+        derivative_weight_C12[j] = controller.Lambda_C12[j][j] * phi_C12[j] * controller.ddqr2 * controller.r1;
         derivative_weight_C21[j] = controller.Lambda_C21[j][j] * phi_C21[j] * controller.dqr1 * controller.r2;
-        derivative_weight_C22[j] = controller.Lambda_C22[j][j] * phi_C22[j] * controller.dqr2 * controller.r2;
+        derivative_weight_C22[j] = controller.Lambda_C22[j][j] * phi_C22[j] * controller.ddqr2 * controller.r2;
         // printf("derivative_weight_C11[%d] = %f\n", j, derivative_weight_C11[j]);
     }
 
