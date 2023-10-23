@@ -15,7 +15,7 @@
 #define IN 4             // hidden layer neurons number
 #define OUT 2            // output layer neurons number
 #define INPUTMODE 1      // input mode selection, 1 or 2
-#define ARRAY_SIZE 10000 // hidden layer neurons number
+#define ARRAY_SIZE 10000 // sampling times
 
 static double Ts = 0.001;                                                                                                                        // sampling period
 static double t0 = 0.0;                                                                                                                          // start time
@@ -24,7 +24,7 @@ static double c_D[OUT][H] = {{-1.0, -0.5, 0.0, 0.5, 1.0}, {-1.0, -0.5, 0.0, 0.5,
 static double c_G[OUT][H] = {{-1.0, -0.5, 0.0, 0.5, 1.0}, {-1.0, -0.5, 0.0, 0.5, 1.0}};                                                          // gravity matrix RBF function center
 static double c_C[IN][H] = {{-1.0, -0.5, 0.0, 0.5, 1.0}, {-2.0, -1.0, 0.0, 1.0, 2.0}, 
                             {-1.0, -0.5, 0.0, 0.5, 1.0}, {-2.0, -1.0, 0.0, 1.0, 2.0}}; // Coriolis matrix RBF function center
-static double b = 10; // RBF function center width
+static double b = 10; // RBF function width
 static double p[] = {2.9, 0.76, 0.87, 3.04, 0.87};
 static double g = 9.8; // gravitational acceleration
 
