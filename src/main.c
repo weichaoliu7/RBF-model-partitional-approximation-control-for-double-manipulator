@@ -394,7 +394,7 @@ double PLANT_realize(int i){
     dynamics.D0[1][0] = p[1] + p[2] * cos(system_state.q2);
     dynamics.D0[1][1] = p[1];
 
-    dynamics.C0[0][0] = -p[2] * cos(system_state.dq2) * sin(system_state.q2);
+    dynamics.C0[0][0] = -p[2] * system_state.dq2 * sin(system_state.q2);
     dynamics.C0[0][1] = -p[2] * (system_state.dq1 + system_state.dq2) * system_state.q2;
     dynamics.C0[1][0] = p[2] * system_state.dq1 * sin(system_state.q2);
     dynamics.C0[1][1] = 0;
