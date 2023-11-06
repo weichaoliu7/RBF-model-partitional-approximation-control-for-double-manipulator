@@ -295,7 +295,7 @@ void CONTROL_init(){
     controller.controller_u10 = system_state.dq2;
     controller.err1 = qd1.y[0] - system_state.q1;
     controller.err1_velocity = dqd1.y[0] - system_state.dq1;
-    controller.err2 = qd1.y[0] - system_state.q2;
+    controller.err2 = qd2.y[0] - system_state.q2;
     controller.err2_velocity = dqd2.y[0] - system_state.dq2;
 
     for (int j = 0; j < H; j++) {
